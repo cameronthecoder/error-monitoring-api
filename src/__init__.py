@@ -13,7 +13,7 @@ import asyncio
 def create_app(testing=False):
     app = Quart(__name__)
     app = cors(app)
-    QuartSchema(app, title='IssueAware API')
+    QuartSchema(app, title="IssueAware API")
 
     quart_env = os.getenv("QUART_ENV", None)
 
