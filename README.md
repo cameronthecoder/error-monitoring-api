@@ -27,7 +27,8 @@ This API uses the following framework and extensions:
     ```
     cd error-monitoring-api
     ```
-    3. Create a virtual environment to manage dependencies
+    Create a virtual environment to manage dependencies:
+    
     On Linux/MacOS:
     ```
     python3 -m venv venv
@@ -36,8 +37,9 @@ This API uses the following framework and extensions:
     ```
     C:\>C:\Python35\python -m venv venv
     ```
-2. Activate the virtual environment
-On Linux/MacOS:
+3. Activate the virtual environment
+    
+    On Linux/MacOS:
     ```
     source venv/bin/activate
     ```
@@ -45,7 +47,7 @@ On Linux/MacOS:
     ```
     C:\> venv\Scripts\activate.bat
     ```
-3. Install the dependencies within the virtual environment
+3. Install the dependencies within the virtual environment:
     ```
     pip install -r requirements.txt
     ```
@@ -58,7 +60,8 @@ On Linux/MacOS:
     POSTGRES_DATABASE=database
     QUART_ENV=development
     ```
-6. Define the ``QUART_APP`` environment variable
+6. Define the ``QUART_APP`` environment variable:
+    
     On Linux/MacOS:
     ```
     export QUART_APP=app:app
