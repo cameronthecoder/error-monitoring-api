@@ -9,6 +9,8 @@ This repository contains the backend code for the error monitoring project.
   - [Overview](#overview)
     - [Framework and Packages](#framework-and-packages)
     - [How to run the app](#how-to-run-the-app)
+    - [Contributions](#contributions)
+    - [API Documentation](#api-documentation)
     - [Roadmap](#roadmap)
 
 ## Overview
@@ -23,7 +25,7 @@ This API uses the following framework and extensions:
 
 ### How to run the app
 1. Clone or download the respository
-2. Open the repository in your terminal by using cd
+2. Open the repository in your terminal by using ``cd``
     ```
     cd error-monitoring-api
     ```
@@ -74,6 +76,27 @@ This API uses the following framework and extensions:
 ```
 quart run
 ```
+8. Make sure it says it connected to the database successfully. If so, it should display this:
+   ```
+    * Serving Quart app 'src'
+    * Environment: development
+    * Debug mode: True
+    * Running on http://127.0.0.1:5000 (CTRL + C to quit)
+    development
+    [2021-09-17 16:01:48,598] INFO in __init__: Connected to database testing on port 5432
+   ``` 
+9.  Go to [localhost:5000](http://localhost:5000) in your browser. You should see "Hello World!" Congratulations!
+
+### Contributions
+All contributions are welcome, even small ones :) But please format your code by using this command before you make a pull request or contribution:
+
+On Windows/MacOS/Linux:
+```
+black .
+``` 
+
+### API Documentation
+You can view documentation for this API by visiting [localhost:5000/redocs](http://localhost:5000/redocs) or [localhost:5000/docs](http:localhost:5000/docs) 
 
 ### Roadmap
 Check out the tasks on the [Projects](https://github.com/cameronthecoder/error-monitoring-api/projects/) tab
