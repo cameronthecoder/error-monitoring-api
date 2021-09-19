@@ -76,14 +76,13 @@ This API uses the following framework and extensions:
 ```
 quart run
 ```
-8. Make sure it says it connected to the database successfully. If so, it should display this:
+8. If everything was done correctly, you should see this output with no errors:
    ```
     * Serving Quart app 'src'
     * Environment: development
     * Debug mode: True
     * Running on http://127.0.0.1:5000 (CTRL + C to quit)
     development
-    [2021-09-17 16:01:48,598] INFO in __init__: Connected to database testing on port 5432
    ``` 
 9.  Go to [localhost:5000](http://localhost:5000) in your browser. You should see "Hello World!" Congratulations!
 
