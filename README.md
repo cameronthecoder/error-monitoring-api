@@ -7,6 +7,7 @@ This repository contains the backend code for the error monitoring project.
 - [Error Monitoring API](#error-monitoring-api)
   - [Table of contents](#table-of-contents)
   - [Overview](#overview)
+    - [Project Architecture](#project-architecture)
     - [Framework and Packages](#framework-and-packages)
     - [How to run the app](#how-to-run-the-app)
     - [Contributions](#contributions)
@@ -14,6 +15,9 @@ This repository contains the backend code for the error monitoring project.
     - [Roadmap](#roadmap)
 
 ## Overview
+
+### Project Architecture
+![an image of the project architecture that contains a frontend app, a backend app, a third party application, and a PostgreSQL database](https://i.imgur.com/prEZi80.png)
 
 ### Framework and Packages
 This API uses the following framework and extensions:
