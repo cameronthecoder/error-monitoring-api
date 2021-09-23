@@ -11,7 +11,7 @@ import os, asyncio
 
 def create_app(testing=False):
     app = Quart(__name__)
-    app = cors(app)
+    app = cors(app, allow_origin=['http://localhost:3000'])
     QuartSchema(app)
 
     # Register JSON error handler
