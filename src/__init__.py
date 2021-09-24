@@ -57,10 +57,7 @@ def create_app(testing=False):
             db = await create_database(app.config["DATABASE_URI"])
             with app.open_resource("schema.sql", "r") as file_:
                 for command in file_.read().split(";"):
-                    try:
-                        await db.execute(command)
-                    except:
-                        print("fuck you")
+                    await db.execute(command)
 
         # run async
         asyncio.get_event_loop().run_until_complete(_inner())
