@@ -25,6 +25,7 @@ priority==2.0.0
 py==1.10.0
 pydantic==1.8.2
 pyhumps==3.0.2
+PyJWT==2.1.0
 pyparsing==2.4.7
 pytest==6.2.5
 pytest-asyncio==0.15.1
