@@ -16,7 +16,7 @@ class Project(ProjectData):
     id: int
     created_at: datetime
     updated_at: datetime
-    api_key: UUID4
+    api_key: Optional[UUID4] = None
     user_id: Optional[int] = None
 
 
@@ -24,7 +24,7 @@ async def insert_project(db: Database, data: ProjectData) -> Project:
     result = await db.fetch_one(
         """INSERT INTO projects (name)
                     VALUES (:name)
-            RETURNING id, created_at, updated_at, name""",
+            RETURNING id, api_key, created_at, updated_at, name""",
         values=asdict(data),
     )
     return Project(**result)

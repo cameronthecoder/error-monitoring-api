@@ -10,7 +10,7 @@ from src.lib.database import create_database
 import os, asyncio, sys
 
 # Allow react app to communicate with API
-ALLOWED_ORIGINS = ["http://localhost:3000"]
+ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
 
 def create_app(testing=False):
