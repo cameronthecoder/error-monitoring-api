@@ -19,10 +19,6 @@ from quart_schema import validate_response, tag
 blueprint = Blueprint("projects", __name__, url_prefix="/api")
 
 
-async def get_current_user() -> User:
-    return g.user
-
-
 @dataclass
 class Projects:
     projects: List[Project]
