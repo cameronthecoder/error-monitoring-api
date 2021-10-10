@@ -6,7 +6,7 @@ from datetime import datetime
 from pydantic.types import UUID4
 
 
-@dataclass
+@dataclass  
 class ProjectData:
     name: str
 

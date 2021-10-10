@@ -33,6 +33,24 @@ async def get_user_by_id(id: int):
     )
 
 
+def decode_token(token) -> dict:
+    try:
+        decoded = jwt.decode(
+            token,
+            current_app.config["SECRET_KEY"],
+            issuer="api",
+            algorithms=["HS256"],
+        )
+        return decoded
+    except jwt.ExpiredSignatureError:
+        raise APIError(401, "TOKEN_EXPIRED")
+    except jwt.InvalidIssuerError:
+        raise APIError(401, "TOKEN_INVALID_ISSUER")
+    except jwt.DecodeError:
+        raise APIError(401, "TOKEN_INVALID")
+
+
+
 # JWT required decorator
 def jwt_required(f):
     """
@@ -49,21 +67,7 @@ def jwt_required(f):
                 token = request.headers.get("Authorization").split()[
                     1
                 ]  # The format expected is Bearer <token>
-                # Decode the token and throw an error if the token is invalid
-                # Query the database to make sure the user exists and is has an active account
-                try:
-                    decoded = jwt.decode(
-                        token,
-                        current_app.config["SECRET_KEY"],
-                        issuer="api",
-                        algorithms=["HS256"],
-                    )
-                except jwt.ExpiredSignatureError:
-                    raise APIError(401, "TOKEN_EXPIRED")
-                except jwt.InvalidIssuerError:
-                    raise APIError(401, "TOKEN_INVALID_ISSUER")
-                except jwt.DecodeError:
-                    raise APIError(401, "TOKEN_INVALID")
+                decoded = decode_token(token)
                 result = await get_user_by_id(decoded["id"])
                 # Throws an error if the user doesn't exist or isn't active
                 if result is None:

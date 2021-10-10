@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from quart import got_request_exception
 from src.lib.api_error import APIError
 from src.lib.database import create_database
+from error_extension.quart_errors import QuartError
 import os, asyncio, sys
 
 # Allow react app to communicate with API
@@ -17,12 +18,11 @@ def create_app(testing=False):
     app = Quart(__name__)
     app = cors(app, allow_origin=ALLOWED_ORIGINS)
     QuartSchema(app, title="Error Monitoring API")
+    QuartError(app, 'fjdsklfjdsklfjklsdf', server_host="http://localhost:2000").attach()
 
     # Register JSON error handler
     @app.errorhandler(APIError)  # type: ignore
     async def handle_api_error(error: APIError) -> ResponseReturnValue:
-        for arg in error.args:
-            print(arg)
         return {"code": error.code}, error.status_code
 
     quart_env = os.getenv("QUART_ENV", None)
