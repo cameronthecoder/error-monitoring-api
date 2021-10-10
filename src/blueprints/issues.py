@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from quart import Blueprint
+from quart import Blueprint, request
 from quart_schema import validate_response
 from enum import Enum
 from typing import Dict, Optional, List
@@ -56,8 +56,16 @@ class Issue:
     updated_at: datetime
     status: StatusEnum = StatusEnum.UNRESOLVED
 
+error = ''
 
-@validate_response(Issue)
-@blueprint.route("/issues/")
+@blueprint.post("/projects/issues/")
 async def testing():
-    return "Hello WORLD"
+    global error
+    data = (await request.get_json())
+    error = data
+    return '', 200
+
+@blueprint.get('/error/')
+async def error():
+    global error
+    return error
