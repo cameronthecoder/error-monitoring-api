@@ -47,7 +47,7 @@ async def get_project(id: int) -> Project:
     """
     project = await select_project(current_app.db, id)
     if project is None:
-        raise APIError(404, "NOT_FOUND")
+        raise APIError(404, "The project was not found.")
     else:
         return project
 
@@ -72,4 +72,4 @@ async def project_delete(id: int) -> ResponseReturnValue:
     This will delete the project.
     """
     await delete_project(current_app.db, id)
-    return "", 202
+    return {'message': 'Project successfully deleted.'}, 202
