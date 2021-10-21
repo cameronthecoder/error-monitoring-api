@@ -1,11 +1,21 @@
-from quart import Blueprint
+from dataclasses import dataclass
+from datetime import datetime
+from quart import Blueprint, request
 from quart_schema import validate_response
 
 
 blueprint = Blueprint("issues", __name__, url_prefix="/api")
 
+error = ''
 
-@blueprint.route("/issues/")
+@blueprint.post("/projects/issues/")
 async def testing():
-    # TODO: get issues from database
-    return "Hello WORLD"
+    global error
+    data = (await request.get_json())
+    error = data
+    return '', 200
+
+@blueprint.get('/error/')
+async def error():
+    global error
+    return error
