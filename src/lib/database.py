@@ -1,11 +1,10 @@
 from databases import Database
+from src.models.issues import StatusEnum
 import json
 
-from src.models.issues import StatusEnum
 
-
-async def create_database(db_uri: str) -> Database:
-    database = Database(db_uri)
+async def create_database(db_url: str) -> Database:
+    database = Database(db_url)
     await database.connect()
     async with database.connection() as connection:
         await connection.raw_connection._con.set_type_codec(

@@ -1,11 +1,9 @@
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Dict, Optional, List, Tuple
+from typing import Dict, Optional, List
 import json
 from databases.core import Database
-from quart.wrappers import request
-from src.models.projects import Project
 
 
 class StatusEnum(Enum):
@@ -32,8 +30,8 @@ class Frame(FrameData):
 class IssueData:
     environment: Dict
     request: Dict
-    frames: List[FrameData]
     error_name: str
+    frames: List[FrameData]
 
     def __post_init__(self):
         if type(self.environment) == str and type(self.request) == str:
@@ -51,8 +49,9 @@ class _IssueDataDefaults:
 class Issue(IssueData):
     id: int
     created_at: datetime
-    frames: List[Frame]
     updated_at: datetime
+    frames: List[Frame]
+    error_name: Optional[str]
     project_id: int
     current_status: StatusEnum = StatusEnum.unresolved
 
@@ -63,22 +62,36 @@ class ProjectIssue:
     created_at: datetime
     updated_at: datetime
     project_id: int
+    error_name: Optional[str]  # NOTE: should not be optional but for time being it is
     current_status: StatusEnum = StatusEnum.unresolved
 
 
 async def select_frames(db: Database, issue_id: int) -> List[Frame]:
-    query = """SELECT *
-                FROM issues_frames
-            WHERE issue_id = :id
+    query = """SELECT frames.* 
+                FROM issues_frames 
+                INNER JOIN frames ON frames.id = frame_id 
+            AND issue_id = :id
     """
     return [Frame(**row) async for row in db.iterate(query, values={"id": issue_id})]
+
+
+async def select_issue(db: Database, id: int) -> Optional[Issue]:
+    query = """SELECT *
+                FROM issues
+            WHERE id = :id"""
+    result = await db.fetch_one(query, values={"id": id})
+    if result:
+        frames = await select_frames(db, id)
+    else:
+        frames = []
+    return None if result is None else Issue(**result, frames=frames)
 
 
 async def select_issues_from_project(
     db: Database, project_id: int
 ) -> List[ProjectIssue]:
-    query = """SELECT id,created_at,updated_at,project_id,current_status FROM issues 
-            WHERE project_id = :project_id  
+    query = """SELECT id,created_at,error_name,updated_at,project_id,current_status FROM issues 
+            WHERE project_id = :project_id
     """
     return [
         ProjectIssue(**row)
@@ -113,8 +126,8 @@ async def insert_issue(db: Database, project_id: int, data: IssueData) -> Issue:
     values = {
         "project_id": project_id,
         "error_name": data.error_name,
-        "request": data.request,
-        "environment": data.environment,
+        "request": json.dumps(data.request),
+        "environment": json.dumps(data.environment),
     }
     result = await db.fetch_one(
         """INSERT INTO issues(project_id, request, environment, error_name)

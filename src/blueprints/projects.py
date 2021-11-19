@@ -59,8 +59,7 @@ async def get_project(id: int) -> Project:
     project = await select_project(current_app.db, id)
     if project is None:
         raise APIError(404, "The project was not found.")
-    else:
-        return project
+    return project
 
 
 @blueprint.post("/projects/")

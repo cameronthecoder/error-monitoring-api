@@ -31,7 +31,7 @@ class QuartError(object):
                 "method": request.method,
                 "cookies": request.cookies,
             }
-            return {}
+            return req
         except:
             return {}
 

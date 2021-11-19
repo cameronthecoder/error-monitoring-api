@@ -55,9 +55,7 @@ def create_app(testing=False):
 
         async def _inner() -> None:
             db = await create_database(app.config["DATABASE_URI"])
-            with open(
-                "/home/cameron/error-monitoring-api/src/schema.sql", "r"
-            ) as file_:
+            with open(os.getcwd() + "/src/schema.sql", "r") as file_:
                 for command in file_.read().split(";"):
                     await db.execute(command)
 
