@@ -37,6 +37,7 @@ class Issues:
     issues: List[ProjectIssue]
     project: Project
 
+
 @blueprint.get("/projects/")
 @validate_response(Projects, 200)
 @tag(["Projects"])
@@ -82,7 +83,8 @@ async def project_delete(id: int) -> ResponseReturnValue:
     This will delete the project.
     """
     await delete_project(current_app.db, id)
-    return {'message': 'Project successfully deleted.'}, 202
+    return {"message": "Project successfully deleted."}, 202
+
 
 @blueprint.route("/projects/<int:id>/issues/")
 @validate_response(Issues)
@@ -95,7 +97,3 @@ async def get_project_issues(id: int) -> Issues:
     issues = await select_issues_from_project(current_app.db, id)
     project = await select_project(current_app.db, id)
     return Issues(issues, project)
-
-
-
-

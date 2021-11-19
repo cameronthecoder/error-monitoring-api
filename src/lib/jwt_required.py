@@ -50,7 +50,6 @@ def decode_token(token) -> dict:
         raise APIError(401, "TOKEN_INVALID")
 
 
-
 # JWT required decorator
 def jwt_required(f):
     """

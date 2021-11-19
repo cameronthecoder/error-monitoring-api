@@ -10,11 +10,10 @@ class QuartError(object):
         self.sender = None
         self.api_key = api_key
         self.server_host = server_host
-        #self.quart_app.logger.addHandler
+        # self.quart_app.logger.addHandler
 
         got_request_exception.connect(self.handle_exception, quart_app)
         quart_app.extensions["error_handler"] = self
-            
 
     async def handle_exception(self, sender, exception: Exception, **extra) -> None:
         request_data = self.get_request_data()
@@ -23,7 +22,7 @@ class QuartError(object):
 
     def get_request_data(self) -> dict:
         try:
-            req =  {
+            req = {
                 "headers": dict(request.headers),
                 "path": request.path,
                 "url": request.url,

@@ -18,7 +18,7 @@ def create_app(testing=False):
     app = Quart(__name__)
     app = cors(app, allow_origin=ALLOWED_ORIGINS)
     QuartSchema(app, title="Error Monitoring API")
-    #QuartError(app, 'fjdsklfjdsklfjklsdf', server_host="http://localhost:2000").attach()
+    # QuartError(app, 'fjdsklfjdsklfjklsdf', server_host="http://localhost:2000").attach()
 
     # Register JSON error handler
     @app.errorhandler(APIError)  # type: ignore
@@ -55,7 +55,9 @@ def create_app(testing=False):
 
         async def _inner() -> None:
             db = await create_database(app.config["DATABASE_URI"])
-            with app.open_resource("schema.sql", "r") as file_:
+            with open(
+                "/home/cameron/error-monitoring-api/src/schema.sql", "r"
+            ) as file_:
                 for command in file_.read().split(";"):
                     await db.execute(command)
 

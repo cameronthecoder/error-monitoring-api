@@ -5,7 +5,22 @@ import traceback
 import requests
 import threading
 import json
+from datetime import date, timedelta
+
 from importlib.metadata import version
+
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        try:
+            if isinstance(obj, timedelta):
+                return str(obj)
+            iterable = iter(obj)
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        return json.JSONEncoder.default(self, obj)
 
 
 class Client(object):
@@ -60,16 +75,17 @@ class Client(object):
             frames.append(f)
 
         for key, value in env_data.items():
-            environment[key] = str(value)
-        environment["QUART_VER"] = version('quart')
+            if value is not None:
+                environment[key] = value
+        environment["QUART_VER"] = version("quart")
         environment["PYTHON_VER"] = platform.python_version()
 
         issue = {
             "frames": frames,
             "error_name": f"{type.__name__}: {str(exception)}",
             "request": req_data,
-            "environment": environment
+            "environment": environment,
         }
-        issue_json = json.dumps(issue)        
-        
+        issue_json = json.dumps(issue, indent=2, cls=CustomJSONEncoder)
+
         threading.Thread(target=self._send, args=(issue_json,)).start()

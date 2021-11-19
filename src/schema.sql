@@ -19,15 +19,14 @@ CREATE TABLE IF NOT EXISTS frames (
     method_name VARCHAR(100)
 );
 
-CREATE TYPE status AS ENUM ('resolved', 'unresolved', 'ignored');
-
+--CREATE TYPE status AS ENUM ('resolved', 'unresolved', 'ignored');
 CREATE TABLE IF NOT EXISTS issues  (
     id SERIAL PRIMARY KEY,
     current_status status DEFAULT 'unresolved',
     -- Used w/ foreign key to tell what project this is linked with
     project_id INT,
     error_name VARCHAR(150),
-    environment hstore, -- key-value pair
+    environment jsonb, -- key-value pair
     request jsonb,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
@@ -36,6 +35,7 @@ CREATE TABLE IF NOT EXISTS issues  (
       FOREIGN KEY(project_id) 
 	    REFERENCES projects(id)
 );
+
 
 -- Creating a issues_frames junction table
 -- Each issue has multiple frames, so we can't use a foreign key constraint like above.

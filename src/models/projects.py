@@ -6,7 +6,7 @@ from datetime import datetime
 from pydantic.types import UUID4
 
 
-@dataclass  
+@dataclass
 class ProjectData:
     name: str
 
@@ -29,12 +29,13 @@ async def insert_project(db: Database, data: ProjectData) -> Project:
     )
     return Project(**result)
 
+
 async def select_project_from_api_key(db: Database, api_key: str) -> Optional[Project]:
     result = await db.fetch_one(
         """SELECT *
             FROM projects
         WHERE api_key = :api_key""",
-        values={'api_key': api_key}
+        values={"api_key": api_key},
     )
     return None if not result else Project(**result)
 
