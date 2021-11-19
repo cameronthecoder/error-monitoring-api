@@ -22,15 +22,19 @@ class QuartError(object):
         self.sender.send_exception(exception, type(exception), request_data, env_data)
 
     def get_request_data(self) -> dict:
-        return {
-            "headers": dict(request.headers),
-            "path": request.path,
-            "url": request.url,
-            "host": request.host,
-            "args": request.args,
-            "method": request.method,
-            "cookies": request.cookies,
-        }
+        try:
+            req =  {
+                "headers": dict(request.headers),
+                "path": request.path,
+                "url": request.url,
+                "host": request.host,
+                "args": request.args,
+                "method": request.method,
+                "cookies": request.cookies,
+            }
+            return {}
+        except:
+            return {}
 
     def attach(self) -> Client:
         if not hasattr(self.quart_app, "extensions"):

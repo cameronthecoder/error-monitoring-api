@@ -2,10 +2,10 @@ import itertools
 import platform
 import sys
 import traceback
-import quart
 import requests
 import threading
 import json
+from importlib.metadata import version
 
 
 class Client(object):
@@ -14,18 +14,21 @@ class Client(object):
         self.server_host = server_host
 
     def _send(self, data):
+        print(data)
         try:
             response = requests.post(
-                self.server_host + "/api/projects/issues/",
+                self.server_host + f"/api/issues/",
                 headers={
                     "API-Key": self.api_key,
                     "Content-Type": "application/json",
+                    "Accept": "application/json",
                     "User-Agent": "error-monitoring",
                 },
                 data=data,
                 timeout=10,
             )
-            return response.json()
+            json = response.json()
+            return json
         except Exception as e:
             print(e)
 
@@ -48,7 +51,7 @@ class Client(object):
         environment = {}
         for frame in tb:
             f = {
-                "file": frame[0],
+                "file_name": frame[0],
                 "line_number": frame[1],
                 "method_name": frame[2],
                 "line": frame[3],
@@ -58,16 +61,15 @@ class Client(object):
 
         for key, value in env_data.items():
             environment[key] = str(value)
-        
-        environment["QUART_VER"] = quart.__version__
+        environment["QUART_VER"] = version('quart')
         environment["PYTHON_VER"] = platform.python_version()
 
         issue = {
             "frames": frames,
-            "error": {"name": f"{type.__name__}: {str(exception)}"},
+            "error_name": f"{type.__name__}: {str(exception)}",
             "request": req_data,
             "environment": environment
         }
-        print(issue)
+        issue_json = json.dumps(issue)        
         
-        threading.Thread(target=self._send, args=(json.dumps(issue),)).start()
+        threading.Thread(target=self._send, args=(issue_json,)).start()

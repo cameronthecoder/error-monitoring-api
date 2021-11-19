@@ -11,14 +11,14 @@ from error_extension.quart_errors import QuartError
 import os, asyncio, sys
 
 # Allow react app to communicate with API
-ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
+ALLOWED_ORIGINS = ["http://localhost:5000", "http://127.0.0.1:5000"]
 
 
 def create_app(testing=False):
     app = Quart(__name__)
     app = cors(app, allow_origin=ALLOWED_ORIGINS)
     QuartSchema(app, title="Error Monitoring API")
-    QuartError(app, 'fjdsklfjdsklfjklsdf', server_host="http://localhost:2000").attach()
+    #QuartError(app, 'fjdsklfjdsklfjklsdf', server_host="http://localhost:2000").attach()
 
     # Register JSON error handler
     @app.errorhandler(APIError)  # type: ignore

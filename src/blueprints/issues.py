@@ -1,21 +1,28 @@
-from dataclasses import dataclass
-from datetime import datetime
-from quart import Blueprint, request
-from quart_schema import validate_response
+from os import abort
+from quart import Blueprint, request, current_app
+from quart_schema.validation import validate_request, validate_response
+
+from src.models.issues import Issue, IssueData, insert_issue
+from src.models.projects import select_project_from_api_key
 
 
 blueprint = Blueprint("issues", __name__, url_prefix="/api")
 
-error = ''
 
-@blueprint.post("/projects/issues/")
-async def testing():
-    global error
-    data = (await request.get_json())
-    error = data
-    return '', 200
+@blueprint.post("/issues/")
+@validate_request(IssueData)
+@validate_response(Issue, 200)
+async def add_issue(data: IssueData):
+    print((await request.data))
+    api_key = request.headers.get('Api-Key', None)
+    print(request.headers)
+    if api_key:
+        project = await select_project_from_api_key(current_app.db, api_key)
+        if project:
+            issue = await insert_issue(current_app.db, project.id, data)
+            return issue
+        else:
+            return {'error': 'API Key not valid.'}
+    else:
+        return abort(400)
 
-@blueprint.get('/error/')
-async def error():
-    global error
-    return error

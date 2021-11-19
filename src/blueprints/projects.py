@@ -1,4 +1,9 @@
 from dataclasses import dataclass
+from src.models.issues import (
+    Issue,
+    ProjectIssue,
+    select_issues_from_project,
+)
 from src.lib.jwt_required import User, jwt_required
 from quart.typing import ResponseReturnValue
 
@@ -26,6 +31,11 @@ class Projects:
     def __str__(self) -> str:
         return "Projects"
 
+
+@dataclass
+class Issues:
+    issues: List[ProjectIssue]
+    project: Project
 
 @blueprint.get("/projects/")
 @validate_response(Projects, 200)
@@ -73,3 +83,19 @@ async def project_delete(id: int) -> ResponseReturnValue:
     """
     await delete_project(current_app.db, id)
     return {'message': 'Project successfully deleted.'}, 202
+
+@blueprint.route("/projects/<int:id>/issues/")
+@validate_response(Issues)
+@tag(["Projects"])
+async def get_project_issues(id: int) -> Issues:
+    """Get issues
+
+    Get all issues associated with a project.
+    """
+    issues = await select_issues_from_project(current_app.db, id)
+    project = await select_project(current_app.db, id)
+    return Issues(issues, project)
+
+
+
+

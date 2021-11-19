@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 from databases import Database
 from datetime import datetime
 
@@ -28,6 +28,15 @@ async def insert_project(db: Database, data: ProjectData) -> Project:
         values=asdict(data),
     )
     return Project(**result)
+
+async def select_project_from_api_key(db: Database, api_key: str) -> Optional[Project]:
+    result = await db.fetch_one(
+        """SELECT *
+            FROM projects
+        WHERE api_key = :api_key""",
+        values={'api_key': api_key}
+    )
+    return None if not result else Project(**result)
 
 
 async def select_project(db: Database, id: int) -> Optional[Project]:
