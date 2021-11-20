@@ -28,8 +28,6 @@ blueprint = Blueprint("projects", __name__, url_prefix="/api")
 class Projects:
     projects: List[Project]
 
-    def __str__(self) -> str:
-        return "Projects"
 
 
 @dataclass
