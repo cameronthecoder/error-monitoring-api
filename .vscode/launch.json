@@ -49,5 +49,28 @@
             "cwd": "${workspaceRoot}",
             "jinja": true,
         },
-    ]
+        {
+            "name": "Create Fake Issue",
+            "type": "python",
+            "request": "launch",
+            "module": "quart",
+            "args": [
+                "create_fake_error",
+                "${input:projectAPIKey}"
+            ],
+            "env": {
+                "QUART_APP": "app:app"
+            },
+            "envFile": "${workspaceRoot}/src/.env",
+            "cwd": "${workspaceRoot}",
+            "jinja": true,
+        },
+    ],
+    "inputs": [
+        {
+            "id": "projectAPIKey",
+            "type": "promptString",
+            "description": "The project's API Key"
+        }
+    ],
 }
