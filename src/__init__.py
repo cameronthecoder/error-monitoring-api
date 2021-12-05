@@ -77,7 +77,7 @@ def create_app(testing=False):
     def drop_db() -> None:
         async def _inner() -> None:
             db = await create_database(app.config["DATABASE_URI"])
-            await app.db.execute("""
+            await db.execute("""
             DROP TABLE IF EXISTS projects;
                 DROP TABLE IF EXISTS frames;
                 DROP TABLE IF EXISTS issues;
