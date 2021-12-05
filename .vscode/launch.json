@@ -5,20 +5,49 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Uvicorn",
+            "name": "Python: Quart",
             "type": "python",
             "request": "launch",
             "module": "uvicorn",
             "args": [
                 "app:app",
-                "--reload"
+                "--reload",
+                "--port",
+                "5000"
+            ],
+            "envFile": "${workspaceRoot}/src/.env",
+            "cwd": "${workspaceRoot}",
+            "jinja": true,
+        },
+        {
+            "name": "Initalize Database",
+            "type": "python",
+            "request": "launch",
+            "module": "quart",
+            "args": [
+                "init_db",
             ],
             "env": {
-                "QUART_APP": "app:app",
-                "QUART_ENV": "development",
-                "SECRET_KEY": "changethis"
+                "QUART_APP": "app:app"
             },
-            "jinja": true
-        }
+            "envFile": "${workspaceRoot}/src/.env",
+            "cwd": "${workspaceRoot}",
+            "jinja": true,
+        },
+        {
+            "name": "Drop Database",
+            "type": "python",
+            "request": "launch",
+            "module": "quart",
+            "args": [
+                "drop_db",
+            ],
+            "env": {
+                "QUART_APP": "app:app"
+            },
+            "envFile": "${workspaceRoot}/src/.env",
+            "cwd": "${workspaceRoot}",
+            "jinja": true,
+        },
     ]
 }

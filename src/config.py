@@ -14,10 +14,6 @@ class Config(object):
     POSTGRES_PORT = os.environ.get("POSTGRES_PORT", 5432)
     POSTGRES_HOST = os.environ.get("POSTGRES_HOST", "127.0.0.1")
     POSTGRES_DATABASE = os.environ["POSTGRES_DATABASE"]
-    # MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
-    # MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    # MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    # MAIL_PORT = os.environ.get('MAIL_PORT', 'smtp.gmail.com')
 
     @property
     def DATABASE_URI(self):

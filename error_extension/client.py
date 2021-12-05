@@ -24,7 +24,9 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 
 class Client(object):
-    def __init__(self, api_key: str, server_host: str, excluded_keys: list = []) -> None:
+    def __init__(
+        self, api_key: str, server_host: str, excluded_keys: list = []
+    ) -> None:
         self.api_key = api_key
         self.server_host = server_host
         self.excluded_keys = excluded_keys
@@ -53,14 +55,16 @@ class Client(object):
 
     def _get_code_window(self, file, line_number) -> str:
         print(file)
-        if file != '<string>':
+        if file != "<string>":
             with open(file) as _file:
                 code = ""
-                for line in itertools.islice(_file, (line_number - 10), line_number + 10):
+                for line in itertools.islice(
+                    _file, (line_number - 10), line_number + 10
+                ):
                     code += line
                 return code
         else:
-            return ''
+            return ""
 
     def send_exception(self, exception, type, req_data: dict, env_data: dict):
         # Not sure if this is a good way to parse exceptions but it works for now /shrug
@@ -71,7 +75,6 @@ class Client(object):
         frames = []
         environment = {}
         for frame in tb:
-            print(frame[0], frame[1], frame[2], frame[3])
             f = {
                 "file_name": frame[0],
                 "line_number": frame[1],
@@ -83,10 +86,10 @@ class Client(object):
 
         for key, value in env_data.items():
             if key in self.excluded_keys:
-                environment[key] = '******'
+                environment[key] = "******"
             elif value is not None:
                 environment[key] = value
-            
+
         environment["QUART_VER"] = version("quart")
         environment["PYTHON_VER"] = platform.python_version()
 

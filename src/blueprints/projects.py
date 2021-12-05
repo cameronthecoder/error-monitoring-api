@@ -29,7 +29,6 @@ class Projects:
     projects: List[Project]
 
 
-
 @dataclass
 class Issues:
     issues: List[ProjectIssue]
@@ -94,8 +93,9 @@ async def get_project_issues(id: int) -> Issues:
     issues = await select_issues_from_project(current_app.db, id)
     project = await select_project(current_app.db, id)
     if project is None:
-        raise APIError(404, 'Project not found')
+        raise APIError(404, "Project not found")
     return Issues(issues, project)
+
 
 @blueprint.get("/projects/<string:key>/issues/gen/")
 @hide_route

@@ -8,15 +8,19 @@ from error_extension.quart_errors import QuartErrorMonitor
 import os, asyncio, sys, click
 
 # Allow react app to communicate with API
-ALLOWED_ORIGINS = ["http://localhost:5000", "http://127.0.0.1:5000"]
+ALLOWED_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000"]
 
 
 def create_app(testing=False):
     app = Quart(__name__)
     app = cors(app, allow_origin=ALLOWED_ORIGINS)
     QuartSchema(app)
-    app.monitor = QuartErrorMonitor(app, 'fb320860-2138-4807-9cc1-1f356ef14a57', excluded_keys=['POSTGRES_PASSWORD', 'POSTGRES_USER']).attach()
-    
+    app.monitor = QuartErrorMonitor(
+        app,
+        'fb320860-2138-4807-9cc1-1f356ef14a57',
+        excluded_keys=["POSTGRES_PASSWORD", "POSTGRES_USER"],
+        server_host="http://localhost:5000",
+    ).attach()
 
     # Register JSON error handler
     @app.errorhandler(APIError)  # type: ignore
@@ -24,8 +28,6 @@ def create_app(testing=False):
         return {"code": error.code}, error.status_code
 
     quart_env = os.getenv("QUART_ENV", None)
-
-    # TODO: use config from pgjones book
 
     if testing:
         cfg = import_string("src.config.TestingConfig")()
@@ -52,7 +54,7 @@ def create_app(testing=False):
         """
 
         async def _inner() -> None:
-            db = await create_database(app.config["DATABASE_URI"])
+            db = await create_database(app.config["DATABASE_URI"], set_codecs=False)
             with open(os.getcwd() + "/src/schema.sql", "r") as file_:
                 for command in file_.read().split(";"):
                     await db.execute(command)
@@ -61,30 +63,32 @@ def create_app(testing=False):
         asyncio.get_event_loop().run_until_complete(_inner())
 
     @app.cli.command("create_fake_error")
-    @click.argument('api_key')
+    @click.argument("api_key")
     def create_fake_error(api_key) -> None:
         """
         Create fake error for a project
         """
+
         async def _inner() -> None:
             client = app.test_client()
-            await client.post(f'/api/projects/{api_key}/issues/gen/')
-            
+            await client.get(f"/api/projects/{api_key}/issues/gen/")
 
         asyncio.get_event_loop().run_until_complete(_inner())
 
     @app.cli.command("drop_db")
     def drop_db() -> None:
         async def _inner() -> None:
-            db = await create_database(app.config["DATABASE_URI"])
-            await db.execute("""
-            DROP TABLE IF EXISTS projects;
-                DROP TABLE IF EXISTS frames;
-                DROP TABLE IF EXISTS issues;
-                DROP TABLE IF EXISTS issues_frames;
+            db = await create_database(app.config["DATABASE_URI"], set_codecs=False)
+            stmt = """
+                DROP TABLE IF EXISTS projects CASCADE;
+                DROP TABLE IF EXISTS frames CASCADE;
+                DROP TABLE IF EXISTS issues CASCADE;
+                DROP TABLE IF EXISTS issues_frames CASCADE;
                 DROP TYPE IF EXISTS status;
-            """)
-            
+            """
+            queries = stmt.split(';')
+            for query in queries:
+                await db.execute(query)
 
         asyncio.get_event_loop().run_until_complete(_inner())
 

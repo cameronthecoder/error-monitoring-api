@@ -4,7 +4,11 @@ from quart import Quart, got_request_exception, request
 
 class QuartErrorMonitor(object):
     def __init__(
-        self, quart_app: Quart, api_key: str, server_host: str = "http://localhost:8000", excluded_keys: list = []
+        self,
+        quart_app: Quart,
+        api_key: str,
+        server_host: str = "http://localhost:8000",
+        excluded_keys: list = [],
     ) -> None:
         self.quart_app = quart_app
         self.sender = None

@@ -32,4 +32,3 @@ async def get_issue(id: int):
     if issue is None:
         raise APIError(404, "The issue was not found.")
     return issue
-
