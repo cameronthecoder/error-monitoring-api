@@ -1,14 +1,11 @@
 from quart import Quart, ResponseReturnValue
 from quart_cors import cors
-from databases import Database
 from quart_schema import QuartSchema
 from werkzeug.utils import import_string
-from dotenv import load_dotenv
-from quart import got_request_exception
 from src.lib.api_error import APIError
 from src.lib.database import create_database
-from error_extension.quart_errors import QuartError
-import os, asyncio, sys
+from error_extension.quart_errors import QuartErrorMonitor
+import os, asyncio, sys, click
 
 # Allow react app to communicate with API
 ALLOWED_ORIGINS = ["http://localhost:5000", "http://127.0.0.1:5000"]
@@ -17,8 +14,9 @@ ALLOWED_ORIGINS = ["http://localhost:5000", "http://127.0.0.1:5000"]
 def create_app(testing=False):
     app = Quart(__name__)
     app = cors(app, allow_origin=ALLOWED_ORIGINS)
-    QuartSchema(app, title="Error Monitoring API")
-    # QuartError(app, 'fjdsklfjdsklfjklsdf', server_host="http://localhost:2000").attach()
+    QuartSchema(app)
+    app.monitor = QuartErrorMonitor(app, 'fb320860-2138-4807-9cc1-1f356ef14a57', excluded_keys=['POSTGRES_PASSWORD', 'POSTGRES_USER']).attach()
+    
 
     # Register JSON error handler
     @app.errorhandler(APIError)  # type: ignore
@@ -60,6 +58,33 @@ def create_app(testing=False):
                     await db.execute(command)
 
         # run async
+        asyncio.get_event_loop().run_until_complete(_inner())
+
+    @app.cli.command("create_fake_error")
+    @click.argument('api_key')
+    def create_fake_error(api_key) -> None:
+        """
+        Create fake error for a project
+        """
+        async def _inner() -> None:
+            client = app.test_client()
+            await client.post(f'/api/projects/{api_key}/issues/gen/')
+            
+
+        asyncio.get_event_loop().run_until_complete(_inner())
+
+    @app.cli.command("drop_db")
+    def drop_db() -> None:
+        async def _inner() -> None:
+           await app.db.execute("""
+           DROP TABLE IF EXISTS projects;
+            DROP TABLE IF EXISTS frames;
+            DROP TABLE IF EXISTS issues;
+            DROP TABLE IF EXISTS issues_frames;
+            DROP TYPE IF EXISTS status;
+           """)
+            
+
         asyncio.get_event_loop().run_until_complete(_inner())
 
     # Blueprints

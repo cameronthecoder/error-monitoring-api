@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS frames (
     method_name VARCHAR(100)
 );
 
---CREATE TYPE status AS ENUM ('resolved', 'unresolved', 'ignored');
+CREATE TYPE status AS ENUM ('resolved', 'unresolved', 'ignored');
 CREATE TABLE IF NOT EXISTS issues  (
     id SERIAL PRIMARY KEY,
     current_status status DEFAULT 'unresolved',

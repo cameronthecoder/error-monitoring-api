@@ -7,7 +7,7 @@ from src.models.issues import (
 from src.lib.jwt_required import User, jwt_required
 from quart.typing import ResponseReturnValue
 
-from quart_schema.validation import validate_request
+from quart_schema import validate_request, hide_route
 from src.lib.api_error import APIError
 from typing import List, Tuple
 from src.models.projects import (
@@ -93,4 +93,16 @@ async def get_project_issues(id: int) -> Issues:
     """
     issues = await select_issues_from_project(current_app.db, id)
     project = await select_project(current_app.db, id)
+    if project is None:
+        raise APIError(404, 'Project not found')
     return Issues(issues, project)
+
+@blueprint.post("/projects/<string:key>/issues/gen/")
+@hide_route
+@tag(["Projects"])
+async def gen_issue(key: str):
+    """Generate sample error for project"""
+    current_app.monitor.set_api_key(key)
+    arr = [3, 3]
+    arr[5]
+    return "hello world"

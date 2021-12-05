@@ -2,13 +2,14 @@ from error_extension.client import Client
 from quart import Quart, got_request_exception, request
 
 
-class QuartError(object):
+class QuartErrorMonitor(object):
     def __init__(
-        self, quart_app: Quart, api_key: str, server_host: str = "http://localhost:8000"
+        self, quart_app: Quart, api_key: str, server_host: str = "http://localhost:8000", excluded_keys: list = []
     ) -> None:
         self.quart_app = quart_app
         self.sender = None
         self.api_key = api_key
+        self.excluded_keys = excluded_keys
         self.server_host = server_host
         # self.quart_app.logger.addHandler
 
@@ -38,6 +39,6 @@ class QuartError(object):
     def attach(self) -> Client:
         if not hasattr(self.quart_app, "extensions"):
             self.quart_app.extensions = {}
-        self.sender = Client(self.api_key, self.server_host)
+        self.sender = Client(self.api_key, self.server_host, self.excluded_keys)
 
         return self.sender

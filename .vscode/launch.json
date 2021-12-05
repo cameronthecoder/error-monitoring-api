@@ -5,16 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Quart",
+            "name": "Python: Uvicorn",
             "type": "python",
             "request": "launch",
-            "module": "quart",
+            "module": "uvicorn",
             "args": [
-                "run"
+                "app:app",
+                "--reload"
             ],
             "env": {
                 "QUART_APP": "app:app",
-                "QUART_ENV": "development"
+                "QUART_ENV": "development",
+                "SECRET_KEY": "changethis"
             },
             "jinja": true
         }

@@ -72,7 +72,7 @@ def jwt_required(f):
                 if result is None:
                     raise APIError(401, "USER_NOT_FOUND")
                 if not result.active:
-                    return APIError(401, "USER_NOT_ACTIVE")
+                    raise APIError(401, "USER_NOT_ACTIVE")
                 g.user = result
             else:
                 raise APIError(401, "INVALID_AUTHORIZATION_SCHEME")

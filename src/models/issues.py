@@ -2,8 +2,8 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
 from typing import Dict, Optional, List
+from databases import Database
 import json
-from databases.core import Database
 
 
 class StatusEnum(Enum):
@@ -41,11 +41,6 @@ class IssueData:
 
 
 @dataclass
-class _IssueDataDefaults:
-    current_status: StatusEnum
-
-
-@dataclass
 class Issue(IssueData):
     id: int
     created_at: datetime
@@ -62,7 +57,7 @@ class ProjectIssue:
     created_at: datetime
     updated_at: datetime
     project_id: int
-    error_name: Optional[str]  # NOTE: should not be optional but for time being it is
+    error_name: Optional[str]
     current_status: StatusEnum = StatusEnum.unresolved
 
 

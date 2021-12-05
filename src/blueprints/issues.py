@@ -1,9 +1,8 @@
 from quart import Blueprint, request, current_app, abort
-from quart_schema import validate_request, validate_response, tag
+from quart_schema import validate_request, validate_response, tag, hide_route
 from src.lib.api_error import APIError
 from src.models.issues import Issue, IssueData, insert_issue, select_issue
 from src.models.projects import select_project_from_api_key
-
 
 blueprint = Blueprint("issues", __name__, url_prefix="/api")
 
@@ -33,3 +32,4 @@ async def get_issue(id: int):
     if issue is None:
         raise APIError(404, "The issue was not found.")
     return issue
+

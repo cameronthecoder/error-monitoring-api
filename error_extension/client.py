@@ -24,15 +24,16 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 
 class Client(object):
-    def __init__(self, api_key: str, server_host: str) -> None:
+    def __init__(self, api_key: str, server_host: str, excluded_keys: list = []) -> None:
         self.api_key = api_key
         self.server_host = server_host
+        self.excluded_keys = excluded_keys
 
     def _send(self, data):
         print(data)
         try:
             response = requests.post(
-                self.server_host + f"/api/issues/",
+                self.server_host + "/api/issues/",
                 headers={
                     "API-Key": self.api_key,
                     "Content-Type": "application/json",
@@ -47,14 +48,19 @@ class Client(object):
         except Exception as e:
             print(e)
 
+    def set_api_key(self, key: str) -> None:
+        self.api_key = key
+
     def _get_code_window(self, file, line_number) -> str:
-        with open(file) as _file:
-            code = ""
-            iteration = 0
-            for line in itertools.islice(_file, (line_number - 10), line_number + 10):
-                iteration += 1
-                code += line
-            return code
+        print(file)
+        if file != '<string>':
+            with open(file) as _file:
+                code = ""
+                for line in itertools.islice(_file, (line_number - 10), line_number + 10):
+                    code += line
+                return code
+        else:
+            return ''
 
     def send_exception(self, exception, type, req_data: dict, env_data: dict):
         # Not sure if this is a good way to parse exceptions but it works for now /shrug
@@ -65,6 +71,7 @@ class Client(object):
         frames = []
         environment = {}
         for frame in tb:
+            print(frame[0], frame[1], frame[2], frame[3])
             f = {
                 "file_name": frame[0],
                 "line_number": frame[1],
@@ -75,8 +82,11 @@ class Client(object):
             frames.append(f)
 
         for key, value in env_data.items():
-            if value is not None:
+            if key in self.excluded_keys:
+                environment[key] = '******'
+            elif value is not None:
                 environment[key] = value
+            
         environment["QUART_VER"] = version("quart")
         environment["PYTHON_VER"] = platform.python_version()
 
