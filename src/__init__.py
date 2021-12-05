@@ -76,13 +76,14 @@ def create_app(testing=False):
     @app.cli.command("drop_db")
     def drop_db() -> None:
         async def _inner() -> None:
-           await app.db.execute("""
-           DROP TABLE IF EXISTS projects;
-            DROP TABLE IF EXISTS frames;
-            DROP TABLE IF EXISTS issues;
-            DROP TABLE IF EXISTS issues_frames;
-            DROP TYPE IF EXISTS status;
-           """)
+            db = await create_database(app.config["DATABASE_URI"])
+            await app.db.execute("""
+            DROP TABLE IF EXISTS projects;
+                DROP TABLE IF EXISTS frames;
+                DROP TABLE IF EXISTS issues;
+                DROP TABLE IF EXISTS issues_frames;
+                DROP TYPE IF EXISTS status;
+            """)
             
 
         asyncio.get_event_loop().run_until_complete(_inner())
