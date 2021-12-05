@@ -97,7 +97,7 @@ async def get_project_issues(id: int) -> Issues:
         raise APIError(404, 'Project not found')
     return Issues(issues, project)
 
-@blueprint.post("/projects/<string:key>/issues/gen/")
+@blueprint.get("/projects/<string:key>/issues/gen/")
 @hide_route
 @tag(["Projects"])
 async def gen_issue(key: str):
