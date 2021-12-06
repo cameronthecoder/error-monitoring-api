@@ -14,7 +14,7 @@ ALLOWED_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000"]
 def create_app(testing=False):
     app = Quart(__name__)
     app = cors(app, allow_origin=ALLOWED_ORIGINS)
-    QuartSchema(app)
+    QuartSchema(app, title="Error Monitoring API")
     app.monitor = QuartErrorMonitor(
         app,
         'ac739734-046a-4bb8-a6d3-655ebf463b76',

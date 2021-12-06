@@ -1,5 +1,5 @@
 from error_extension.client import Client
-from quart import Quart, got_request_exception, request, request_finished
+from quart import Quart, got_request_exception, request
 
 
 class QuartErrorMonitor(object):
@@ -18,7 +18,6 @@ class QuartErrorMonitor(object):
         # self.quart_app.logger.addHandler
 
         got_request_exception.connect(self.handle_exception, quart_app)
-        request_finished.connect()
         quart_app.extensions["error_handler"] = self
 
     async def handle_exception(self, sender, exception: Exception, **extra) -> None:

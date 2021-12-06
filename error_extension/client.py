@@ -60,7 +60,7 @@ class Client(object):
             with open(file) as _file:
                 code = ""
                 for line in itertools.islice(
-                    _file, (line_number - 20), line_number + 20
+                    _file, (line_number - 10), line_number + 10
                 ):
                     code += line
                 return code
