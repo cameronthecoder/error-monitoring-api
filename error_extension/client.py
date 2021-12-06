@@ -5,6 +5,7 @@ import traceback
 import requests
 import threading
 import json
+import os
 from datetime import date, timedelta
 
 from importlib.metadata import version
@@ -55,11 +56,11 @@ class Client(object):
 
     def _get_code_window(self, file, line_number) -> str:
         print(file)
-        if file != "<string>":
+        if file != "<string>" and os.path.exists(file):
             with open(file) as _file:
                 code = ""
                 for line in itertools.islice(
-                    _file, (line_number - 10), line_number + 10
+                    _file, (line_number - 20), line_number + 20
                 ):
                     code += line
                 return code

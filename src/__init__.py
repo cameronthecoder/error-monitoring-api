@@ -17,8 +17,8 @@ def create_app(testing=False):
     QuartSchema(app)
     app.monitor = QuartErrorMonitor(
         app,
-        'fb320860-2138-4807-9cc1-1f356ef14a57',
-        excluded_keys=["POSTGRES_PASSWORD", "POSTGRES_USER"],
+        'ac739734-046a-4bb8-a6d3-655ebf463b76',
+        excluded_keys=["POSTGRES_PASSWORD", "POSTGRES_USER", "DATABASE_URI", "SECRET_KEY"],
         server_host="http://localhost:5000",
     ).attach()
 
@@ -41,7 +41,10 @@ def create_app(testing=False):
 
     @app.before_serving
     async def startup() -> None:
-        app.db = await create_database(app.config["DATABASE_URI"])
+        if testing is True:
+            app.db = await create_database(app.config["DATABASE_URI"], set_codecs=False)
+        else:
+            app.db = await create_database(app.config["DATABASE_URI"], set_codecs=True)
 
     @app.after_serving
     async def disconnect_db() -> None:
