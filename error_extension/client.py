@@ -6,8 +6,7 @@ import requests
 import threading
 import json
 import os
-from datetime import date, timedelta
-
+from datetime import timedelta
 from importlib.metadata import version
 
 
@@ -33,7 +32,6 @@ class Client(object):
         self.excluded_keys = excluded_keys
 
     def _send(self, data):
-        print(data)
         try:
             response = requests.post(
                 self.server_host + "/api/issues/",
@@ -55,7 +53,6 @@ class Client(object):
         self.api_key = key
 
     def _get_code_window(self, file, line_number) -> str:
-        print(file)
         if file != "<string>" and os.path.exists(file):
             with open(file) as _file:
                 code = ""
@@ -67,21 +64,36 @@ class Client(object):
         else:
             return ""
 
-    def send_exception(self, exception, type, req_data: dict, env_data: dict):
-        # Not sure if this is a good way to parse exceptions but it works for now /shrug
-        if exception.__traceback__:
+    def send_exception(
+        self, req_data: dict = {}, env_data: dict = {}, exc_info=None, exception: Exception = None
+    ):
+        # Copied some code from https://github.com/MindscapeHQ/raygun4py/blob/2bf646157d2eb169fcbd9342d9fcc3447855f189/python3/raygun4py/raygunprovider.py#L80
+        # This allows for sending an exception without passing an exception object
+
+        if exc_info is None:
+            exc_info = sys.exc_info()
+
+        exc_type, exc_value, exc_traceback = exc_info
+
+        error_name = None
+        if exception is not None:
+            error_name = f"{type(exception).__name__}: {str(exception)}"
             tb = traceback.extract_tb(exception.__traceback__)
         else:
-            tb = traceback.extract_tb(sys.exc_info())
+            error_name = f"{exc_type.__name__}: {str(exc_value)}"
+            tb = traceback.extract_tb(exc_traceback)
+
         frames = []
         environment = {}
+
         for frame in tb:
+            file_name, line_number, method_name, line = frame
             f = {
-                "file_name": frame[0],
-                "line_number": frame[1],
-                "method_name": frame[2],
-                "line": frame[3],
-                "code": self._get_code_window(frame[0], frame[1]),
+                "file_name": file_name,
+                "line_number": line_number,
+                "method_name": method_name,
+                "line": line,
+                "code": self._get_code_window(file_name, line_number),
             }
             frames.append(f)
 
@@ -96,7 +108,7 @@ class Client(object):
 
         issue = {
             "frames": frames,
-            "error_name": f"{type.__name__}: {str(exception)}",
+            "error_name": error_name,
             "request": req_data,
             "environment": environment,
         }

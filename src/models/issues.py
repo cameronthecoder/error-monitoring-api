@@ -1,5 +1,6 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
+from quart import current_app
 from enum import Enum
 from typing import Dict, Optional, List
 from databases import Database
@@ -39,7 +40,6 @@ class IssueData:
             self.environment = json.loads(self.environment)
             self.request = json.loads(self.request)
 
-
 @dataclass
 class Issue(IssueData):
     id: int
@@ -61,6 +61,7 @@ class ProjectIssue:
     current_status: StatusEnum = StatusEnum.unresolved
 
 
+
 async def select_frames(db: Database, issue_id: int) -> List[Frame]:
     query = """SELECT frames.* 
                 FROM issues_frames 
@@ -70,17 +71,20 @@ async def select_frames(db: Database, issue_id: int) -> List[Frame]:
     return [Frame(**row) async for row in db.iterate(query, values={"id": issue_id})]
 
 
-async def select_issue(db: Database, id: int) -> Optional[Issue]:
+async def select_issue_from_project(db: Database, project_id: int, issue_id: int) -> Optional[Issue]:
     query = """SELECT *
                 FROM issues
-            WHERE id = :id"""
-    result = await db.fetch_one(query, values={"id": id})
+            WHERE id = :issue_id AND project_id = :project_id
+            """
+    result = await db.fetch_one(query, values={"project_id": project_id, "issue_id": issue_id})
     if result:
-        frames = await select_frames(db, id)
+        frames = await select_frames(db, issue_id)
     else:
         frames = []
     return None if result is None else Issue(**result, frames=frames)
 
+async def group_issues(db: Database, project_id) -> List[Issue]:
+    pass
 
 async def select_issues_from_project(
     db: Database, project_id: int

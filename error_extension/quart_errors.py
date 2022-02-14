@@ -1,7 +1,6 @@
 from error_extension.client import Client
 from quart import Quart, got_request_exception, request
 
-
 class QuartErrorMonitor(object):
     def __init__(
         self,
@@ -15,7 +14,7 @@ class QuartErrorMonitor(object):
         self.api_key = api_key
         self.excluded_keys = excluded_keys
         self.server_host = server_host
-        # self.quart_app.logger.addHandler
+        #self.handler.setLevel(logging.DEBUG)
 
         got_request_exception.connect(self.handle_exception, quart_app)
         quart_app.extensions["error_handler"] = self
@@ -23,7 +22,7 @@ class QuartErrorMonitor(object):
     async def handle_exception(self, sender, exception: Exception, **extra) -> None:
         request_data = self.get_request_data()
         env_data = self.quart_app.config
-        self.sender.send_exception(exception, type(exception), request_data, env_data)
+        self.sender.send_exception(request_data, env_data)
 
     def get_request_data(self) -> dict:
         try:

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from src.models.issues import (
     Issue,
     ProjectIssue,
+    select_issue_from_project,
     select_issues_from_project,
 )
 from src.lib.jwt_required import User, jwt_required
@@ -34,7 +35,6 @@ class Issues:
     issues: List[ProjectIssue]
     project: Project
 
-
 @blueprint.get("/projects/")
 @validate_response(Projects, 200)
 @tag(["Projects"])
@@ -53,6 +53,7 @@ async def get_project(id: int) -> Project:
     """Get a project.
     Retrieve a Project by its ID.
     """
+    #`stats = await get_stats(current_app.db, id)
     project = await select_project(current_app.db, id)
     if project is None:
         raise APIError(404, "The project was not found.")
@@ -95,6 +96,14 @@ async def get_project_issues(id: int) -> Issues:
     if project is None:
         raise APIError(404, "Project not found")
     return Issues(issues, project)
+
+@blueprint.route("/projects/<int:project_id>/issues/<int:issue_id>/")
+@validate_response(Issue, 200)
+async def get_project_issue(project_id: int, issue_id: int):
+    issue = await select_issue_from_project(current_app.db, project_id, issue_id)
+    if issue is None:
+        raise APIError(404, "Issue not found")
+    return issue
 
 
 @blueprint.get("/projects/<string:key>/issues/gen/")

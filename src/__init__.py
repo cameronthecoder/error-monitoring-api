@@ -17,11 +17,15 @@ def create_app(testing=False):
     QuartSchema(app, title="Error Monitoring API")
     app.monitor = QuartErrorMonitor(
         app,
-        'ac739734-046a-4bb8-a6d3-655ebf463b76',
-        excluded_keys=["POSTGRES_PASSWORD", "POSTGRES_USER", "DATABASE_URI", "SECRET_KEY"],
+        "cbe42135-0739-494d-9c09-d2ff14af7708",
+        excluded_keys=[
+            "POSTGRES_PASSWORD",
+            "POSTGRES_USER",
+            "DATABASE_URI",
+            "SECRET_KEY",
+        ],
         server_host="http://localhost:5000",
     ).attach()
-
     # Register JSON error handler
     @app.errorhandler(APIError)  # type: ignore
     async def handle_api_error(error: APIError) -> ResponseReturnValue:
@@ -73,8 +77,13 @@ def create_app(testing=False):
         """
 
         async def _inner() -> None:
-            client = app.test_client()
-            await client.get(f"/api/projects/{api_key}/issues/gen/")
+            # app.monitor.set_api_key(api_key)
+            try:
+                raise SyntaxError("The syntax is invalid.")
+            except:
+                app.monitor.set_api_key(api_key)
+                app.monitor.send_exception(env_data=app.config)
+                click.echo(f"Created fake issue for project {api_key}")
 
         asyncio.get_event_loop().run_until_complete(_inner())
 
@@ -89,7 +98,7 @@ def create_app(testing=False):
                 DROP TABLE IF EXISTS issues_frames CASCADE;
                 DROP TYPE IF EXISTS status;
             """
-            queries = stmt.split(';')
+            queries = stmt.split(";")
             for query in queries:
                 await db.execute(query)
 
